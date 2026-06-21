@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Real-Time Chat Platform — Mansour Kanswa</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2334506A'/%3E%3Cstop offset='60%25' stop-color='%231F3346'/%3E%3Cstop offset='100%25' stop-color='%2316242F'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Ctext x='32' y='42' font-family='Arial,Helvetica,sans-serif' font-size='32' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ background:#FAFAF8; color:#1A1A1A; font-family:'Inter',-apple-system,sans-serif; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .top-bar{ background:rgba(250,250,248,0.86); backdrop-filter:blur(10px); border-bottom:1px solid #E5E3DD; padding:16px 28px; display:flex; justify-content:space-between; align-items:center; }
+  .back-link{ font-family:'JetBrains Mono',monospace; font-size:13px; color:#6B6B6B; text-decoration:none; display:flex; align-items:center; gap:6px; transition:color .15s; }
+  .back-link:hover{ color:#1A1A1A; } .back-link svg{ width:14px; height:14px; }
+  .page-title{ font-size:13px; font-weight:600; color:#2D4356; letter-spacing:0.04em; }
+  .project-page{ max-width:900px; margin:0 auto; padding:40px 28px 60px; }
+  .project-header{ margin-bottom:40px; }
+  .project-header h1{ font-size:28px; font-weight:800; letter-spacing:-0.02em; margin-bottom:8px; }
+  .project-header p{ font-size:15px; color:#4A4A48; max-width:500px; }
+  .preview-section{ background:#fff; border:1px solid #E5E3DD; border-radius:14px; padding:40px; margin-bottom:40px; min-height:400px; display:flex; align-items:center; justify-content:center; }
+  .code-section h2{ font-size:13px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#1A1A1A; margin-bottom:16px; }
+  pre{ background:#1a1a2e; color:#e0e0e0; font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.7; padding:24px; border-radius:10px; overflow-x:auto; tab-size:2; }
+  .hl-kw{ color:#c792ea; } .hl-fn{ color:#82aaff; } .hl-str{ color:#c3e88d; } .hl-num{ color:#f78c6c; } .hl-cm{ color:#546e7a; font-style:italic; }
+  footer{ text-align:center; padding:30px 28px; border-top:1px solid #E5E3DD; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#6B6B6B; }
+
+  .chat{ max-width:480px; margin:0 auto; width:100%; border:1px solid #E5E3DD; border-radius:12px; overflow:hidden; display:flex; flex-direction:column; height:460px; background:#fff; }
+  .chat-head{ padding:14px 16px; background:#2D4356; color:#fff; font-weight:600; font-size:14px; display:flex; align-items:center; gap:8px; }
+  .chat-head .dot{ width:8px; height:8px; border-radius:50%; background:#3FA66A; }
+  .chat-head .users{ font-size:11px; font-weight:400; opacity:.7; margin-left:auto; }
+  .chat-msgs{ flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:8px; }
+  .chat-msg{ padding:9px 13px; border-radius:12px; max-width:75%; font-size:14px; line-height:1.4; word-wrap:break-word; }
+  .chat-msg .sender{ font-size:10px; font-weight:600; opacity:.7; margin-bottom:2px; display:block; }
+  .chat-msg.in{ background:#F0F2F5; align-self:flex-start; border-bottom-left-radius:4px; }
+  .chat-msg.out{ background:#2D4356; color:#fff; align-self:flex-end; border-bottom-right-radius:4px; }
+  .chat-msg .time{ font-size:10px; opacity:.5; margin-top:3px; display:block; }
+  .chat-foot{ display:flex; gap:8px; padding:12px 16px; border-top:1px solid #E5E3DD; }
+  .chat-foot input{ flex:1; padding:10px 14px; border:1px solid #E5E3DD; border-radius:8px; font-size:14px; outline:none; }
+  .chat-foot input:focus{ border-color:#2D4356; }
+  .chat-foot button{ padding:10px 18px; background:#2D4356; color:#fff; border:none; border-radius:8px; font-size:14px; cursor:pointer; }
+  .chat-foot button:hover{ background:#1F3346; }
+  .chat-users{ display:flex; gap:6px; padding:8px 16px; border-bottom:1px solid #E5E3DD; font-size:12px; color:#6B6B6B; background:#FAFAF8; }
+  .chat-users span{ background:#E8EDF1; padding:2px 10px; border-radius:10px; }
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <a class="back-link" href="../../"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m7-7l-7 7 7 7"/></svg>Back to portfolio</a>
+  <span class="page-title">Project / Real-Time Chat Platform</span>
+</div>
+<div class="project-page">
+  <div class="project-header">
+    <h1>Real-Time Chat Platform</h1>
+    <p>A multi-room real-time messaging platform built with Socket.io — supports typing indicators and online users.</p>
+  </div>
+  <div class="preview-section">
+    <div class="chat">
+      <div class="chat-head"><span class="dot"></span> General Chat <span class="users" id="userCount">2 online</span></div>
+      <div class="chat-users"><span>#general</span><span>#random</span><span>#dev</span></div>
+      <div class="chat-msgs" id="chatMsgs"></div>
+      <div class="chat-foot">
+        <input type="text" id="chatInp" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendChat()">
+        <button onclick="sendChat()">Send</button>
+      </div>
+    </div>
+  </div>
+  <div class="code-section">
+    <h2>Source Code</h2>
+    <pre><span class="hl-cm">// Real-Time Chat Platform — Socket.io multi-room</span>
+
+<span class="hl-cm">// Server</span>
+<span class="hl-kw">const</span> io = <span class="hl-fn">require</span>(<span class="hl-str">"socket.io"</span>)(server, {
+  cors: { origin: <span class="hl-str">"*"</span> }
+});
+
+io.<span class="hl-fn">on</span>(<span class="hl-str">"connection"</span>, (socket) =&gt; {
+  socket.<span class="hl-fn">on</span>(<span class="hl-str">"join room"</span>, (room) =&gt; {
+    socket.<span class="hl-fn">join</span>(room);
+    io.<span class="hl-fn">to</span>(room).<span class="hl-fn">emit</span>(<span class="hl-str">"user joined"</span>, socket.id);
+  });
+
+  socket.<span class="hl-fn">on</span>(<span class="hl-str">"chat message"</span>, ({ room, msg, user }) =&gt; {
+    io.<span class="hl-fn">to</span>(room).<span class="hl-fn">emit</span>(<span class="hl-str">"chat message"</span>, { user, msg });
+  });
+
+  socket.<span class="hl-fn">on</span>(<span class="hl-str">"typing"</span>, ({ room, user }) =&gt; {
+    socket.<span class="hl-fn">to</span>(room).<span class="hl-fn">emit</span>(<span class="hl-str">"typing"</span>, user);
+  });
+});</pre>
+  </div>
+</div>
+<footer><span>Mansour Kanswa</span></footer>
+<script>
+  const msgs = document.getElementById("chatMsgs");
+  const users = ["Alice", "Bob", "Charlie", "Diana"];
+  let currentUser = users[Math.floor(Math.random() * users.length)];
+  let userList = [currentUser, "Charlie"];
+
+  function appendMsg(text, type, sender) {
+    const div = document.createElement("div");
+    div.className = "chat-msg " + type;
+    const now = new Date();
+    const ts = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
+    if (type === "in") div.innerHTML = `<span class="sender">${sender}</span>${text}<span class="time">${ts}</span>`;
+    else div.innerHTML = text + `<span class="time">${ts}</span>`;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function sendChat() {
+    const inp = document.getElementById("chatInp");
+    if (!inp.value.trim()) return;
+    appendMsg(inp.value, "out");
+    const otherUser = userList.find(u => u !== currentUser) || "Charlie";
+    setTimeout(() => {
+      const replies = ["That's a great point!", "I agree! 💯", "Interesting... tell me more!", "lol true", "Yeah I was thinking that too", "Let me check and get back to you"];
+      appendMsg(replies[Math.floor(Math.random() * replies.length)], "in", otherUser);
+    }, 800 + Math.random() * 1200);
+    inp.value = "";
+  }
+
+  document.getElementById("userCount").textContent = userList.length + " online";
+  appendMsg("Welcome to #general! 🎉", "in", "System");
+  appendMsg("Hey everyone! 👋", "in", userList.find(u => u !== currentUser));
+</script>
+</body>
+</html>
